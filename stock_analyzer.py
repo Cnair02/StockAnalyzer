@@ -143,7 +143,7 @@ def create_top_stocks_agent():
     )
     return top_stocks_agent
 
-async def generate_top_10_stocks():
+async def generate_top_10_async():
     """Generate today's top 10 stocks with trend indicators"""
     
     session_service = InMemorySessionService()
@@ -199,7 +199,7 @@ async def generate_top_10_stocks():
 
 
 
-async def analyze_stock(ticker: str):
+async def analyze_stock_async(ticker: str):
     """Run stock analysis"""
     
     session_service = InMemorySessionService()
@@ -244,10 +244,39 @@ async def analyze_stock(ticker: str):
 # ==================== SYNC WRAPPERS (for non-async environments) ====================
 
 def analyze_stock(ticker: str, agent):
-    """Sync wrapper for analyze_stock_async"""
-    return asyncio.run(analyze_stock(ticker))
+    """Sync wrapper - works in Streamlit and regular Python"""
+    try:
+        # Try to get existing event loop (Streamlit has one)
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # In Streamlit - use nest_asyncio
+            import nest_asyncio
+            nest_asyncio.apply()
+    except RuntimeError:
+        pass
+    
+    return asyncio.run(analyze_stock_async(ticker, agent))
+
+# def analyze_stock(ticker: str, agent):
+#     """Sync wrapper for analyze_stock_async"""
+#     return asyncio.run(analyze_stock(ticker))
+
 
 
 def generate_top_10(agent):
-    """Sync wrapper for generate_top_10_async"""
-    return asyncio.run(generate_top_10_stocks())
+    """Sync wrapper - works in Streamlit and regular Python"""
+    try:
+        # Try to get existing event loop (Streamlit has one)
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # In Streamlit - use nest_asyncio
+            import nest_asyncio
+            nest_asyncio.apply()
+    except RuntimeError:
+        pass
+    
+    return asyncio.run(generate_top_10_async(agent))
+
+# def generate_top_10(agent):
+#     """Sync wrapper for generate_top_10_async"""
+#     return asyncio.run(generate_top_10_stocks())
