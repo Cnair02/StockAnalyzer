@@ -6,7 +6,7 @@ import streamlit as st
 import os
 
 # Import everything from our core module
-from stock_analyzer import (
+from stock-analyzer import (
     create_stock_analyzer,
     create_top_stocks_agent,
     analyze_stock,
