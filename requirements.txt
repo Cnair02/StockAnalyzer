@@ -1,3 +1,4 @@
 google-adk
 google-genai
 pandas==2.2.2
+nest_asyncio
