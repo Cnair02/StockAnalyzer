@@ -245,9 +245,9 @@ async def analyze_stock(ticker: str):
 
 def analyze_stock(ticker: str, agent):
     """Sync wrapper for analyze_stock_async"""
-    return asyncio.run(analyze_stock_async(ticker, agent))
+    return asyncio.run(analyze_stock(ticker, agent))
 
 
 def generate_top_10(agent):
     """Sync wrapper for generate_top_10_async"""
-    return asyncio.run(generate_top_10_async(agent))
+    return asyncio.run(generate_top_10_stocks(agent))
