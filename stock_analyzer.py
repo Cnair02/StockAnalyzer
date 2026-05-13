@@ -8,6 +8,7 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.adk.tools import google_search
 from google.adk.models.google_llm import Gemini
+import asyncio
 
 
 
