@@ -6,6 +6,10 @@ import streamlit as st
 import os
 import logging
 
+# Set up logging - ADD THESE LINES
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Import everything from our core module
 from stock_analyzer import (
     create_stock_analyzer,
