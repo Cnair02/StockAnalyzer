@@ -145,53 +145,44 @@ def create_top_stocks_agent():
 
 async def generate_top_10_async(top_stocks_agent):
     """Generate today's top 10 stocks with trend indicators"""
-    
-    session_service = InMemorySessionService()
-    
-    session = await session_service.create_session(
-        state={},
-        app_name="top_stocks",
-        user_id="user"
-    )
-    
-    runner = Runner(
-        agent=top_stocks_agent,
-        app_name="top_stocks",
-        session_service=session_service
-    )
-    
-    query = """Find today's top 10 performing stocks (biggest gainers).
-    
-    For each stock, include:
-    - Ticker and company name
-    - Current price
-    - Today's % change
-    - Yesterday's % change
-    - Trend indicator (↑↓→)
-    
-    Present as a clean table."""
-    
-    content = types.Content(role="user", parts=[types.Part(text=query)])
-    
-    print(f"🔄 Generating Top 10 Stocks...\n")
-    
-    events = runner.run_async(
-        session_id=session.id,
-        user_id="user",
-        new_message=content
-    )
-    
-    all_outputs = []
-    async for event in events:
-        if hasattr(event, 'content') and event.content:
-            for part in event.content.parts:
-                if hasattr(part, 'text') and part.text:
-                    all_outputs.append(part.text)
-    
-    if all_outputs:
-        print(all_outputs[-1])
-    
-    return all_outputs[-1] if all_outputs else ""
+    try:
+        logger.info("Starting top 10 stocks generation")
+        
+        session_service = InMemorySessionService()
+        session = await session_service.create_session(
+            state={}, app_name="top_stocks", user_id="user"
+        )
+        
+        runner = Runner(
+            agent=top_stocks_agent,
+            app_name="top_stocks",
+            session_service=session_service
+        )
+        
+        query = """Find today's top 10 performing stocks with trend indicators."""
+        content = types.Content(role="user", parts=[types.Part(text=query)])
+        
+        events = runner.run_async(
+            session_id=session.id, user_id="user", new_message=content
+        )
+        
+        all_outputs = []
+        async for event in events:
+            if hasattr(event, 'content') and event.content:
+                for part in event.content.parts:
+                    if hasattr(part, 'text') and part.text:
+                        all_outputs.append(part.text)
+        
+        if not all_outputs:
+            logger.warning("No top stocks data generated")
+            return "⚠️ **Unable to retrieve top stocks data.** Please try again in a few moments."
+        
+        logger.info("Top 10 stocks generated successfully")
+        return all_outputs[-1]
+        
+    except Exception as e:
+        logger.error(f"Error generating top 10 stocks: {e}")
+        return f"❌ **Error generating top stocks:** {str(e)}\n\nPlease try again or check your internet connection."
     
 
 
@@ -201,43 +192,53 @@ async def generate_top_10_async(top_stocks_agent):
 
 async def analyze_stock_async(ticker: str,stock_analyzer_agent):
     """Run stock analysis"""
-    
-    session_service = InMemorySessionService()
-    
-    session = await session_service.create_session(
-        state={},
-        app_name="stock_analyzer",
-        user_id="user"
-    )
-    
-    runner = Runner(
-        agent=stock_analyzer_agent,
-        app_name="stock_analyzer",
-        session_service=session_service
-    )
-    
-    query = f"Analyze stock ticker {ticker}. Provide final summary only."
-    content = types.Content(role="user", parts=[types.Part(text=query)])
-    
-    print(f"🔄 Analyzing {ticker}...\n")
-    
-    events = runner.run_async(
-        session_id=session.id,
-        user_id="user",
-        new_message=content
-    )
-    
-    all_outputs = []
-    async for event in events:
-        if hasattr(event, 'content') and event.content:
-            for part in event.content.parts:
-                if hasattr(part, 'text') and part.text:
-                    all_outputs.append(part.text)
-    
-    if all_outputs:
-        print(all_outputs[-1])
-    
-    return all_outputs[-1] if all_outputs else ""
+    try:
+        # Validate ticker input
+        if not ticker or not isinstance(ticker, str):
+            return "❌ **Error:** Invalid ticker symbol provided."
+        
+        ticker = ticker.strip().upper()
+        
+        if len(ticker) < 1 or len(ticker) > 5:
+            return f"❌ **Error:** Ticker '{ticker}' is invalid. Please enter a valid 1-5 character ticker symbol."
+        
+        logger.info(f"Starting analysis for ticker: {ticker}")
+        
+        session_service = InMemorySessionService()
+        session = await session_service.create_session(
+            state={}, app_name="stock_analyzer", user_id="user"
+        )
+        
+        runner = Runner(
+            agent=agent,
+            app_name="stock_analyzer",
+            session_service=session_service
+        )
+        
+        query = f"Analyze stock ticker {ticker}. Provide final summary only."
+        content = types.Content(role="user", parts=[types.Part(text=query)])
+        
+        events = runner.run_async(
+            session_id=session.id, user_id="user", new_message=content
+        )
+        
+        all_outputs = []
+        async for event in events:
+            if hasattr(event, 'content') and event.content:
+                for part in event.content.parts:
+                    if hasattr(part, 'text') and part.text:
+                        all_outputs.append(part.text)
+        
+        if not all_outputs:
+            logger.warning(f"No analysis generated for {ticker}")
+            return f"⚠️ **No data found for ticker '{ticker}'**. Please verify the ticker symbol is correct and try again."
+        
+        logger.info(f"Analysis completed successfully for {ticker}")
+        return all_outputs[-1]
+        
+    except Exception as e:
+        logger.error(f"Error analyzing stock {ticker}: {e}")
+        return f"❌ **Error analyzing {ticker}:** {str(e)}\n\nPlease try again or contact support if the issue persists."
 
 
 
@@ -246,16 +247,21 @@ async def analyze_stock_async(ticker: str,stock_analyzer_agent):
 def analyze_stock(ticker: str, stock_analyzer_agent):
     """Sync wrapper - works in Streamlit and regular Python"""
     try:
-        # Try to get existing event loop (Streamlit has one)
         loop = asyncio.get_event_loop()
         if loop.is_running():
-            # In Streamlit - use nest_asyncio
             import nest_asyncio
             nest_asyncio.apply()
     except RuntimeError:
         pass
+    except Exception as e:
+        logger.error(f"Error in event loop setup: {e}")
+        return f"❌ **System Error:** Unable to initialize analysis engine. Please refresh the page."
     
-    return asyncio.run(analyze_stock_async(ticker, stock_analyzer_agent))
+    try:
+        return asyncio.run(analyze_stock_async(ticker, stock_analyzer_agent))
+    except Exception as e:
+        logger.error(f"Error in analyze_stock wrapper: {e}")
+        return f"❌ **Error:** Analysis failed. Please try again.\n\nDetails: {str(e)}"
 
 # def analyze_stock(ticker: str, agent):
 #     """Sync wrapper for analyze_stock_async"""
@@ -266,16 +272,21 @@ def analyze_stock(ticker: str, stock_analyzer_agent):
 def generate_top_10(top_stocks_agent):
     """Sync wrapper - works in Streamlit and regular Python"""
     try:
-        # Try to get existing event loop (Streamlit has one)
         loop = asyncio.get_event_loop()
         if loop.is_running():
-            # In Streamlit - use nest_asyncio
             import nest_asyncio
             nest_asyncio.apply()
     except RuntimeError:
         pass
+    except Exception as e:
+        logger.error(f"Error in event loop setup: {e}")
+        return f"❌ **System Error:** Unable to initialize top stocks generator. Please refresh the page."
     
-    return asyncio.run(generate_top_10_async(top_stocks_agent))
+    try:
+        return asyncio.run(generate_top_10_async(top_stocks_agent))
+    except Exception as e:
+        logger.error(f"Error in generate_top_10 wrapper: {e}")
+        return f"❌ **Error:** Failed to generate top stocks. Please try again.\n\nDetails: {str(e)}"
 
 # def generate_top_10(agent):
 #     """Sync wrapper for generate_top_10_async"""
