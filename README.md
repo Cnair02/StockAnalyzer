@@ -4,7 +4,7 @@ A multi-agent AI platform that automates stock analysis using Google's Agent Dev
 
 ---
 
-## Project Overview
+## 1.Project Overview
 
 ### Problem Statement
 Traditional stock analysis requires investors to manually gather data from multiple sources—financial statements, technical charts, news articles, and market sentiment—which is time-consuming and prone to bias. Retail investors often lack the tools and expertise to synthesize this information into actionable insights.
@@ -18,7 +18,7 @@ This AI-powered stock analyzer automates the entire research process using a mul
 - **Bias Reduction**: AI-driven synthesis eliminates emotional decision-making
 
 ---
-## 🚀 Features
+## 2.Features
 
 ### 📈 Top 10 Stocks Generator
 - Identifies today's top-performing stocks (biggest gainers)
@@ -39,7 +39,7 @@ Comprehensive analysis across three dimensions:
 
 ---
 
-## 🛠️ Tech Stack
+## 3.Tech Stack
 
 | Component | Technology |
 |-----------|-----------|
@@ -52,7 +52,7 @@ Comprehensive analysis across three dimensions:
 
 ---
 
-## 🧠 Architecture
+## 4.Architecture
 
 User Input
 ↓
@@ -80,15 +80,13 @@ Final Recommendation
 
 ---
 
-## Screenshots
+## 5.Screenshots
 
 <img width="1128" height="778" alt="Screenshot 2026-05-14 at 2 19 57 PM" src="https://github.com/user-attachments/assets/b7fc57cf-d256-40db-bd8b-8748a0e322eb" />
 
-
-
 ---
 
-## 🗺️ Future Roadmap
+## 6.Future Roadmap
 
 ### Watchlist & Portfolio Tracking
 - **Personal Watchlist**: Save and monitor favorite stocks with real-time price alerts and daily performance summaries
