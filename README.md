@@ -54,29 +54,8 @@ Comprehensive analysis across three dimensions:
 
 ## 4.Architecture
 
-User Input
-↓
-┌─────────────────────────────┐
-│ Sequential Coordinator │
-├─────────────────────────────┤
-│ ┌─────────────────────┐ │
-│ │ Technical Analyst │ │ ← Google Search
-│ └─────────────────────┘ │
-│ ↓ │
-│ ┌─────────────────────┐ │
-│ │ Fundamental Analyst │ │ ← Google Search
-│ └─────────────────────┘ │
-│ ↓ │
-│ ┌─────────────────────┐ │
-│ │ News/Sentiment │ │ ← Google Search
-│ └─────────────────────┘ │
-│ ↓ │
-│ ┌─────────────────────┐ │
-│ │ Synthesizer Agent │ │ ← Combines all analyses
-│ └─────────────────────┘ │
-└─────────────────────────────┘
-↓
-Final Recommendation
+<img width="378" height="477" alt="Screenshot 2026-05-14 at 2 24 19 PM" src="https://github.com/user-attachments/assets/e492cb43-1af1-41f8-9355-e0b5922c6c9d" />
+
 
 ---
 
@@ -86,7 +65,7 @@ Final Recommendation
 
 ---
 
-## 6.Future Roadmap
+## 6.Roadmap
 
 ### Watchlist & Portfolio Tracking
 - **Personal Watchlist**: Save and monitor favorite stocks with real-time price alerts and daily performance summaries
