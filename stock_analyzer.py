@@ -9,7 +9,11 @@ from google.adk.sessions import InMemorySessionService
 from google.adk.tools import google_search
 from google.adk.models.google_llm import Gemini
 import asyncio
+import logging  # Make sure this is here
 
+# Set up logging - ADD THESE LINES
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 # Agent 1: Technical Analysis
