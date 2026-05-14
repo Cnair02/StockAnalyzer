@@ -143,7 +143,7 @@ def create_top_stocks_agent():
     )
     return top_stocks_agent
 
-async def generate_top_10_async():
+async def generate_top_10_async(top_stocks_agent):
     """Generate today's top 10 stocks with trend indicators"""
     
     session_service = InMemorySessionService()
@@ -199,7 +199,7 @@ async def generate_top_10_async():
 
 
 
-async def analyze_stock_async(ticker: str):
+async def analyze_stock_async(ticker: str,stock_analyzer_agent):
     """Run stock analysis"""
     
     session_service = InMemorySessionService()
@@ -211,7 +211,7 @@ async def analyze_stock_async(ticker: str):
     )
     
     runner = Runner(
-        agent=stock_analyzer,
+        agent=stock_analyzer_agent,
         app_name="stock_analyzer",
         session_service=session_service
     )
@@ -243,7 +243,7 @@ async def analyze_stock_async(ticker: str):
 
 # ==================== SYNC WRAPPERS (for non-async environments) ====================
 
-def analyze_stock(ticker: str, agent):
+def analyze_stock(ticker: str, stock_analyzer_agent):
     """Sync wrapper - works in Streamlit and regular Python"""
     try:
         # Try to get existing event loop (Streamlit has one)
@@ -255,7 +255,7 @@ def analyze_stock(ticker: str, agent):
     except RuntimeError:
         pass
     
-    return asyncio.run(analyze_stock_async(ticker, agent))
+    return asyncio.run(analyze_stock_async(ticker, stock_analyzer_agent))
 
 # def analyze_stock(ticker: str, agent):
 #     """Sync wrapper for analyze_stock_async"""
@@ -263,7 +263,7 @@ def analyze_stock(ticker: str, agent):
 
 
 
-def generate_top_10(agent):
+def generate_top_10(top_stocks_agent):
     """Sync wrapper - works in Streamlit and regular Python"""
     try:
         # Try to get existing event loop (Streamlit has one)
@@ -275,7 +275,7 @@ def generate_top_10(agent):
     except RuntimeError:
         pass
     
-    return asyncio.run(generate_top_10_async(agent))
+    return asyncio.run(generate_top_10_async(top_stocks_agent))
 
 # def generate_top_10(agent):
 #     """Sync wrapper for generate_top_10_async"""
