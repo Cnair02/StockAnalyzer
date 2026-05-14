@@ -214,7 +214,7 @@ async def analyze_stock_async(ticker: str,stock_analyzer_agent):
         )
         
         runner = Runner(
-            agent=agent,
+            agent=stock_analyzer_agent,
             app_name="stock_analyzer",
             session_service=session_service
         )
