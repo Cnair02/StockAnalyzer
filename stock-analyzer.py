@@ -6,13 +6,16 @@ from google.genai import types
 from google.adk.agents import llm_agent, ParallelAgent, SequentialAgent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
+from google.adk.tools import google_search
+from google.adk.models.google_llm import Gemini
+import asyncio
 
 
 
 # Agent 1: Technical Analysis
 def create_stock_analyzer():
     technical_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="TechnicalAnalyst",
         instruction="""
         Use Google Search to find for the given stock ticker:
@@ -29,7 +32,7 @@ def create_stock_analyzer():
 
     # Agent 2: Fundamental Analysis
     fundamental_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="FundamentalAnalyst",
         instruction="""
         Use Google Search to find for the given stock ticker:
@@ -46,7 +49,7 @@ def create_stock_analyzer():
 
     # Agent 3: News & Sentiment
     news_sentiment_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="NewsSentimentAnalyst",
         instruction="""
         Use Google Search to find latest news for the given stock ticker.
@@ -68,7 +71,7 @@ def create_stock_analyzer():
 
     # Synthesizer
     synthesizer_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="RecommendationSynthesizer",
         instruction="""
         Create ONLY the final summary table from the 3 analyses.
@@ -101,7 +104,7 @@ def create_stock_analyzer():
 
 def create_top_stocks_agent():
     top_stocks_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="TopStocksGenerator",
         instruction="""
         You are a top stocks identifier. Use Google Search to find:
@@ -140,7 +143,7 @@ def create_top_stocks_agent():
     )
     return top_stocks_agent
 
-async def generate_top_10_stocks():
+async def generate_top_10_async(top_stocks_agent):
     """Generate today's top 10 stocks with trend indicators"""
     
     session_service = InMemorySessionService()
@@ -196,7 +199,7 @@ async def generate_top_10_stocks():
 
 
 
-async def analyze_stock(ticker: str):
+async def analyze_stock_async(ticker: str,stock_analyzer_agent):
     """Run stock analysis"""
     
     session_service = InMemorySessionService()
@@ -208,7 +211,7 @@ async def analyze_stock(ticker: str):
     )
     
     runner = Runner(
-        agent=stock_analyzer,
+        agent=stock_analyzer_agent,
         app_name="stock_analyzer",
         session_service=session_service
     )
@@ -240,12 +243,40 @@ async def analyze_stock(ticker: str):
 
 # ==================== SYNC WRAPPERS (for non-async environments) ====================
 
-def analyze_stock(ticker: str, agent):
-    """Sync wrapper for analyze_stock_async"""
-    return asyncio.run(analyze_stock_async(ticker, agent))
+def analyze_stock(ticker: str, stock_analyzer_agent):
+    """Sync wrapper - works in Streamlit and regular Python"""
+    try:
+        # Try to get existing event loop (Streamlit has one)
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # In Streamlit - use nest_asyncio
+            import nest_asyncio
+            nest_asyncio.apply()
+    except RuntimeError:
+        pass
+    
+    return asyncio.run(analyze_stock_async(ticker, stock_analyzer_agent))
+
+# def analyze_stock(ticker: str, agent):
+#     """Sync wrapper for analyze_stock_async"""
+#     return asyncio.run(analyze_stock(ticker))
 
 
-def generate_top_10(agent):
-    """Sync wrapper for generate_top_10_async"""
-    return asyncio.run(generate_top_10_async(agent))
 
+def generate_top_10(top_stocks_agent):
+    """Sync wrapper - works in Streamlit and regular Python"""
+    try:
+        # Try to get existing event loop (Streamlit has one)
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # In Streamlit - use nest_asyncio
+            import nest_asyncio
+            nest_asyncio.apply()
+    except RuntimeError:
+        pass
+    
+    return asyncio.run(generate_top_10_async(top_stocks_agent))
+
+# def generate_top_10(agent):
+#     """Sync wrapper for generate_top_10_async"""
+#     return asyncio.run(generate_top_10_stocks())
