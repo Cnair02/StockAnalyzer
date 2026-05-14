@@ -15,7 +15,7 @@ import asyncio
 # Agent 1: Technical Analysis
 def create_stock_analyzer():
     technical_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="TechnicalAnalyst",
         instruction="""
         Use Google Search to find for the given stock ticker:
@@ -32,7 +32,7 @@ def create_stock_analyzer():
 
     # Agent 2: Fundamental Analysis
     fundamental_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="FundamentalAnalyst",
         instruction="""
         Use Google Search to find for the given stock ticker:
@@ -49,7 +49,7 @@ def create_stock_analyzer():
 
     # Agent 3: News & Sentiment
     news_sentiment_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="NewsSentimentAnalyst",
         instruction="""
         Use Google Search to find latest news for the given stock ticker.
@@ -71,7 +71,7 @@ def create_stock_analyzer():
 
     # Synthesizer
     synthesizer_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="RecommendationSynthesizer",
         instruction="""
         Create ONLY the final summary table from the 3 analyses.
@@ -104,7 +104,7 @@ def create_stock_analyzer():
 
 def create_top_stocks_agent():
     top_stocks_agent = llm_agent.LlmAgent(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         name="TopStocksGenerator",
         instruction="""
         You are a top stocks identifier. Use Google Search to find:
